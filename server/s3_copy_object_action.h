@@ -64,7 +64,12 @@ class S3CopyObjectAction : public S3PutObjectActionBase {
   void fetch_source_object_info_success();
   void fetch_source_object_info_failed();
 
+
   bool if_source_and_destination_same();
+
+  void set_authorization_meta();
+  void check_source_bucket_authorization();
+  void set_source_bucket_authorization_metadata();
 
  public:
   S3CopyObjectAction(
@@ -151,5 +156,6 @@ class S3CopyObjectAction : public S3PutObjectActionBase {
   FRIEND_TEST(S3CopyObjectActionTest, SendErrorResponse);
   FRIEND_TEST(S3CopyObjectActionTest, SendSuccessResponse);
   FRIEND_TEST(S3CopyObjectActionTest, SendFailedResponse);
+  FRIEND_TEST(S3CopyObjectActionTest, DestinationAuthorization);
 };
 #endif  // __S3_SERVER_S3_COPY_OBJECT_ACTION_H__
