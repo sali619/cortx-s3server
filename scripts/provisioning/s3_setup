@@ -126,6 +126,7 @@ do
   shift
 done
 
+# TODO: test for existence of the confstore config file, to be taken in python equivalent of s3_setup
 if [ -z "$confstore_config_url" ]
 then
     echo "ERROR: --config option is mandatory and value should be a valid URL path, exiting."
@@ -237,8 +238,7 @@ configure_openldap()
     else
         echo "INFO: Not setting ldap-replication as the cluster node_count is less than 2."
     fi
-
-    systemctl restart s3authserver
+    echo "INFO: Successfully configured openldap on the node."
 }
 
 add_s3backgrounddelete_rabbitmq_user()
@@ -331,10 +331,11 @@ set_logrotate_policy_ova() {
 
 if [ $s3postinstall == true ]
 then
-    echo "INFO: running post_install..."
+    echo "INFO: Running post_install.."
     # we already have 'exit' statement in 's3setup' binary at failure scenario,
     # no need to add 'exit' here.
     s3setup post_install
+    echo "INFO: All pre-requisites are in place."
 fi
 
 if [ $s3config == true ]
@@ -342,6 +343,7 @@ then
     # validate pre-requisites before proceeding
     # we already have 'exit' statement in 's3setup' binary at failure scenario,
     # no need to add 'exit' here.
+    echo "INFO: validating pre-requisites for provisioning s3server.."
     s3setup post_install
 
     # Fetch and update cluster id
@@ -370,6 +372,7 @@ then
     # validate pre-requisites before proceeding
     # we already have 'exit' statement in 's3setup' binary at failure scenario,
     # no need to add 'exit' here.
+    echo "INFO: validating pre-requisites for provisioning s3server.."
     s3setup post_install
 
     # Setup s3 background delete and its dependencies
