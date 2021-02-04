@@ -66,12 +66,6 @@ rootpasswd=""
 
 encrypt_cli="/opt/seagate/cortx/auth/AuthPassEncryptCLI-1.0-0.jar"
 
-if [ $# -lt 3 ]
-then
-  echo "$USAGE"
-  exit 1
-fi
-
 # check if s3cipher, s3confstore and s3setup are installed on the system
 if ! command -v s3cipher &>/dev/null
 then
@@ -88,7 +82,7 @@ fi
 if ! command -v s3setup &>/dev/null
 then
     echo "ERROR: s3setup not installed on the system, exiting."
-    #exit 1
+    exit 1
 fi
 
 
@@ -157,11 +151,6 @@ get_ldap_password()
         exit 1
     fi
 }
-
-# get openldap password from confstore
-echo "Get openldap passwords from confstore.."
-get_ldap_password
-
 
 # Fetch and update cluster_id
 fetch_update_cluster_id()
@@ -290,6 +279,10 @@ fi
 
 if [ $s3config == true ]
 then
+    # get openldap password from confstore
+    echo "INFO: Get openldap passwords from confstore.."
+    get_ldap_password
+
     # Fetch and update cluster id
     echo "INFO: Fetching and updating cluster id in s3_cluster.yaml .."
     fetch_update_cluster_id
@@ -313,6 +306,10 @@ fi
 
 if [ $s3init == true ]
 then
+    # get openldap password from confstore
+    echo "INFO: Get openldap passwords from confstore.."
+    get_ldap_password
+
     # Setup s3 background delete and its dependencies
     echo "INFO: Creating the s3backgrounddelete account.."
     create_background_delete_account
@@ -320,6 +317,10 @@ fi
 
 if [ $s3test == true ]
 then
+    # get openldap password from confstore
+    echo "INFO: Get openldap passwords from confstore.."
+    get_ldap_password
+
     cmd_out=$(ldapsearch -b "o=s3-background-delete-svc,ou=accounts,dc=s3,dc=seagate,dc=com" -x -w $ldappasswd -D "cn=sgiamadmin,dc=seagate,dc=com" -H ldap://) || echo ""
     if [[ $cmd_out == *"No such object"* ]];then
         echo "ERROR: failed to find s3background delete account, exit."
@@ -331,5 +332,9 @@ fi
 
 if [ $s3cleanup == true ]
 then
-    s3setup --cleanup accounts --ldappasswd "$ldappasswd"
+    # get openldap password from confstore
+    echo "INFO: Get openldap passwords from confstore.."
+    get_ldap_password
+
+    s3setup cleanup --ldappasswd "$ldappasswd"
 fi
